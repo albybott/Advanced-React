@@ -1,6 +1,18 @@
-import Nav from './Nav'
-import Link from 'next/link'
-import styled from 'styled-components'
+import Nav from "./Nav";
+import Link from "next/link";
+import styled from "styled-components";
+import Router from "next/router";
+import NProgress from "nprogress";
+
+Router.onRouteChangeStart = () => {
+  NProgress.start();
+};
+Router.onRouteChangeComplete = () => {
+  NProgress.done();
+};
+Router.onRouteChangeError = () => {
+  NProgress.doine();
+};
 
 const Logo = styled.h1`
   font-size: 4rem;
@@ -9,7 +21,7 @@ const Logo = styled.h1`
   z-index: 2;
   transform: skew(-7deg);
 
-  a{
+  a {
     padding: 0.5rem 1rem;
     background: ${props => props.theme.red};
     color: white;
@@ -18,10 +30,9 @@ const Logo = styled.h1`
   }
 
   ${props => props.theme.media.desktop`margin: 0; text-align: center;`};
-`
+`;
 
 const StyledHeader = styled.div`
-
   .bar {
     border-bottom: 10px solid ${props => props.theme.black};
     display: grid;
@@ -34,16 +45,16 @@ const StyledHeader = styled.div`
       justify-content: center`};
   }
 
-  .sub-bar{
+  .sub-bar {
     display: grid;
     grid-template-columns: 1fr auto;
-    border-bottom: 1px solid ${props => props.theme.lightGray}
+    border-bottom: 1px solid ${props => props.theme.lightGray};
   }
-`
+`;
 
 const Header = () => (
   <StyledHeader>
-    <div className='bar'>
+    <div className="bar">
       <Logo>
         <Link href="/">
           <a>Sick Fits</a>
@@ -56,6 +67,6 @@ const Header = () => (
     </div>
     <div>Cart</div>
   </StyledHeader>
-)
+);
 
-export default Header
+export default Header;
