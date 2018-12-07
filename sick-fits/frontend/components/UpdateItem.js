@@ -19,20 +19,21 @@ const SINGLE_ITEM_QUERY = gql`
 
 const UPDATE_ITEM_MUTATION = gql`
   mutation UPDATE_ITEM_MUTATION(
-    $title: String!
-    $description: String!
-    $price: Int!
-    $image: String
-    $largeImage: String
+    $id: ID!
+    $title: String
+    $description: String
+    $price: Int
   ) {
-    createItem(
+    updateItem(
+      id: $id
       title: $title
       description: $description
       price: $price
-      image: $image
-      largeImage: $largeImage
     ) {
       id
+      title
+      description
+      price
     }
   }
 `;
@@ -47,28 +48,31 @@ class CreateItem extends Component {
     this.setState({ [name]: val });
   };
 
+  updateItem = async (e, updateItemMutation) => {
+    e.preventDefault();
+    console.log("Updating Item...");
+    console.log(this.state);
+
+    const res = await updateItemMutation({
+      variables: {
+        id: this.props.id,
+        ...this.state
+      }
+    });
+
+    console.log("Updated!");
+  };
+
   render() {
     return (
       <Query query={SINGLE_ITEM_QUERY} variables={{ id: this.props.id }}>
         {({ data, loading }) => {
           if (loading) return <p>Loading...</p>;
-
+          if (!data.item) return <p>No item found for id {this.props.id}</p>;
           return (
             <Mutation mutation={UPDATE_ITEM_MUTATION} variables={this.state}>
-              {(createItem, { loading, error }) => (
-                <Form
-                  onSubmit={async e => {
-                    // stop the form from submitting
-                    e.preventDefault();
-                    // call the mutation
-                    const res = await createItem();
-                    // change them to the single item page
-                    Router.push({
-                      pathname: "/item",
-                      query: { id: res.data.createItem.id }
-                    });
-                  }}
-                >
+              {(updateItem, { loading, error }) => (
+                <Form onSubmit={e => this.updateItem(e, updateItem)}>
                   <ErrorMessage error={error} />
                   <fieldset disabled={loading} aria-busy={loading}>
                     <label htmlFor="title">Title</label>
@@ -105,7 +109,7 @@ class CreateItem extends Component {
                     />
                   </fieldset>
 
-                  <button type="submit">Submit</button>
+                  <button type="submit">Sav{loading ? "ing" : "e"} Item</button>
                 </Form>
               )}
             </Mutation>
