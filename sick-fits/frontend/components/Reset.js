@@ -1,19 +1,18 @@
 import React, { Component } from "react";
 import { Mutation } from "react-apollo";
 import gql from "graphql-tag";
+import PropTypes from "prop-types";
 import Form from "./styles/Form";
 import Error from "./ErrorMessage";
 import { CURRENT_USER_QUERY } from "./User";
 
 const RESET_PASSWORD_MUTATION = gql`
   mutation RESET_PASSWORD_MUTATION(
-    $email: String!
     $password: String!
     $confirmPassword: String!
     $resetToken: String!
   ) {
     resetPassword(
-      email: $email
       password: $password
       confirmPassword: $confirmPassword
       resetToken: $resetToken
@@ -25,12 +24,13 @@ const RESET_PASSWORD_MUTATION = gql`
   }
 `;
 
-class ResetPassword extends Component {
+class Reset extends Component {
+  static propTypes = {
+    resetToken: PropTypes.string.isRequired
+  };
   state = {
-    email: "albybott@gmail.com",
     password: "dogs123",
-    confirmPassword: "dogs123",
-    resetToken: "39b155339eee444908a59257762662fe334c1378"
+    confirmPassword: "dogs123"
   };
 
   saveToState = e => {
@@ -41,7 +41,11 @@ class ResetPassword extends Component {
     return (
       <Mutation
         mutation={RESET_PASSWORD_MUTATION}
-        variables={this.state}
+        variables={{
+          password: this.state.password,
+          confirmPassword: this.state.confirmPassword,
+          resetToken: this.props.resetToken
+        }}
         refetchQueries={[{ query: CURRENT_USER_QUERY }]}
       >
         {(resetPassword, { error, loading }) => (
@@ -55,16 +59,6 @@ class ResetPassword extends Component {
             <fieldset disabled={loading} aria-busy={loading}>
               <h2>Reset your password</h2>
               <Error error={error} />
-              <label htmlFor="email">
-                Email
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="email"
-                  value={this.state.email}
-                  onChange={this.saveToState}
-                />
-              </label>
               <label htmlFor="password">
                 Password
                 <input
@@ -95,4 +89,4 @@ class ResetPassword extends Component {
   }
 }
 
-export default ResetPassword;
+export default Reset;

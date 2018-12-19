@@ -116,7 +116,6 @@ const Mutations = {
         resetTokenExpiry
       }
     });
-    console.log(res);
     return { message: "Reset link sent!" };
     // 3. email them that reset token
   },
@@ -127,19 +126,21 @@ const Mutations = {
       return new Error("Passwords do not match!");
     }
     // 2. check if its a legit reset token
-    const user = await ctx.db.query.user({ where: { email: args.email } });
-    if (!user || user.resetToken !== args.resetToken) {
-      return new Error("Invalid reset token!");
-    }
     // 3. check if its expired
-    if (user.resetTokenExpiry > Date.now) {
-      return new Error("Reset token has expired!");
+    const [user] = await ctx.db.query.users({
+      where: {
+        resetToken: args.resetToken,
+        resetTokenExpiry_gte: Date.now() - 3600000
+      }
+    });
+    if (!user) {
+      throw new Error("This token is either invalid or expired");
     }
     // 4. hash their new pasword
     const password = await bcrypt.hash(args.password, 10);
     // 5. save the new password to the user and remove old resetToken fields
     const res = await ctx.db.mutation.updateUser({
-      where: { email: args.email },
+      where: { email: user.email },
       data: {
         password,
         resetToken: null,

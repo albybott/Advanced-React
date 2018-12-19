@@ -26,7 +26,6 @@ type Mutation {
   requestReset(email: String!): SuccessMessage
 
   resetPassword(
-    email: String!
     password: String!
     confirmPassword: String!
     resetToken: String!
