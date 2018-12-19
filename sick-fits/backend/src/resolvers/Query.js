@@ -11,7 +11,7 @@ const Query = {
     }
     return ctx.db.query.user(
       {
-        where: { id: "cjpt5vkzwefvl0a845ndnqowx" }
+        where: { id: ctx.request.userId }
       },
       info
     );

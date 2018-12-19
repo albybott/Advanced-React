@@ -12,9 +12,9 @@ server.express.use(cookieParser());
 server.express.use((req, res, next) => {
   const { token } = req.cookies;
   if (token) {
-    const userId = jwt.verify(token, process.env.APP_SECRET);
+    const data = jwt.verify(token, process.env.APP_SECRET);
     // put the userId onto the req for future requests to access
-    req.userId = userId;
+    req.userId = data.userId;
   }
   next();
 });
