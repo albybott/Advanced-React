@@ -49,10 +49,17 @@ const Mutations = {
   async deleteItem(parent, args, ctx, info) {
     const where = { id: args.id };
     // 1. find the item
-    const item = await ctx.db.query.item({ where }, `{id title}`);
+    const item = await ctx.db.query.item({ where }, `{id title user{id}}`);
 
-    // 2. check if the own the item of have permission
-    // TODO
+    // 2. check if the user owns the item or has permission
+    const ownsItem = item.user.id === ctx.request.userId;
+    const hasPermissions = ctx.request.user.permissions.some(permission =>
+      ["ADMIN", "ITEMDELETE"].includes(permission)
+    );
+
+    if (!ownsItem && !hasPermissions) {
+      throw new Error("You dont have permission to do that");
+    }
 
     // 3. Delete it
     return ctx.db.mutation.deleteItem({ where }, info);
