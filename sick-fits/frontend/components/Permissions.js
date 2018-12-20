@@ -146,7 +146,7 @@ class UserPermissions extends React.Component {
                   disabled={loading}
                   onClick={udpatePermissions}
                 >
-                  Update
+                  Updat{loading ? "ing" : "e"}
                 </SickButton>
               </td>
             </tr>
