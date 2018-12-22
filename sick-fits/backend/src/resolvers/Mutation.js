@@ -256,6 +256,46 @@ const Mutations = {
         }
       }
     });
+  },
+
+  async removeFromCart(parent, args, ctx, info) {
+    // find the cart item
+    const cartItem = await ctx.db.query.cartItem(
+      {
+        where: {
+          id: args.id
+        }
+      },
+      `
+    {
+      id
+      quantity
+      item {
+        id
+      }
+      user {
+        id
+      }
+    }`
+    );
+    if (!cartItem) {
+      return new Error(`That cart item with id ${args.id} does not exist!`);
+    }
+
+    // make sure they own the cart item
+    if (cartItem.user.id !== ctx.request.userId) {
+      return new Error("That cart item does not belong to you!");
+    }
+
+    // delete that cart item
+    return ctx.db.mutation.deleteCartItem(
+      {
+        where: {
+          id: args.id
+        }
+      },
+      info
+    );
   }
 };
 
