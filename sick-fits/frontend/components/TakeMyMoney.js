@@ -33,6 +33,7 @@ class TakeMyMoney extends React.Component {
   // handle the stipe payment token
   // https://stripe.com/docs/testing
   onToken = async (res, createOrder) => {
+    NProgress.start();
     console.log("On Token Called!");
     console.log(res.id);
     console.log("Running createOrder mutation");
@@ -46,7 +47,10 @@ class TakeMyMoney extends React.Component {
       alert(err.message);
     });
 
-    console.log(order);
+    Router.push({
+      pathname: "/order",
+      query: { id: order.data.createOrder.id }
+    });
   };
 
   render() {
