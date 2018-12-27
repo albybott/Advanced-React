@@ -56,6 +56,13 @@ type Query {
   users: [User]!
 
   order(id: ID!): Order
+
+  orders(
+    where: OrderWhereInput
+    orderBy: OrderOrderByInput
+    skip: Int
+    first: Int
+  ): [Order]!
 }
 
 type User {
